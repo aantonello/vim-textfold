@@ -6,7 +6,7 @@ vim9script noclean
 # text and understanding what is inside.
 # Maintainer: Alessandro Antonello < aleantonello at hotmail dot com >
 # ----------------------------------------------------------------------------
-if get(g:, 'textfold_plugin_loaded', 0)
+if get(g:, 'textfold_plugin_loaded', 0) || v:version < 900
   finish
 endif
 let g:textfold_plugin_loaded = v:true
