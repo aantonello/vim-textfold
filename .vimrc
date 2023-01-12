@@ -18,7 +18,7 @@ let g:gui_treeview = 'explorer'               " For NERDTree automatic show up s
 let g:gui_columns  = 200                      " Startup width
 let g:gui_lines    = 99                       " Startup height
 let g:color_light  = 'white'                  " Sets color for day light.
-let g:color_night  = 'mustang'                " Sets color for night.
+let g:color_night  = 'darkZ'                  " Sets color for night.
 
 let g:fc_DefaultFont='InconsolataNerdFontComplete-Regular:h14'
 

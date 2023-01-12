@@ -1,4 +1,4 @@
-vim9script noclean
+vim9script
 # Vim 'autoload' script.
 # Shared functions library.
 # Author: Alessandro Antonello <antonello dot ale at gmail dot com>

@@ -1,4 +1,4 @@
-vim9script noclean
+vim9script
 # foldtext plugin
 # Is a plugin to write better folded line texts.
 # The goal is to bring something more useful than the Vim default.
