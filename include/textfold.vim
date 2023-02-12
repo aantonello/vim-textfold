@@ -6,21 +6,12 @@ vim9script
 const version = '1.0.2'
 
 # ----------------------------------------------------------------------------
-# Options
-# ----------------------------------------------------------------------------
-var options = {
-  'disabled': [],
-  'sgml'    : [],
-  'suffix'  : ''
-}
-
-# ----------------------------------------------------------------------------
 # Local functions
 # ----------------------------------------------------------------------------
 
 # Check if the current buffer has a disabled filetype.
 # ----------------------------------------------------------------------------
-def IsDisabled(ftype: string, config: list<string>) : bool
+def IsDisabled(ftype: string, config: list<string>): bool
   if empty(config) || (index(ftype, config) < 0)
     return false
   endif
@@ -29,7 +20,7 @@ enddef
 
 # Check whether the current filetype is SGML kind.
 # ----------------------------------------------------------------------------
-def IsSgmlKind(ftype: string, config: list<string>, line: string) : bool
+def IsSgmlKind(ftype: string, config: list<string>, line: string): bool
   # If the filetype is in the SGML configuration list and the folded line
   # starts with an angled bracket.
   return ((index(ftype, config) >= 0) && line =~? '^\s*<\w\+.*') ? true : false
@@ -37,7 +28,7 @@ enddef
 
 # Remove fold markers if we have it in the current line.
 # ----------------------------------------------------------------------------
-def RemoveFoldMarkers(line: string) : string
+def RemoveFoldMarkers(line: string): string
   const marker = split(getwinvar(0, '&foldmarker'), ',')
   if empty(marker)
     return line
@@ -48,7 +39,7 @@ enddef
 
 # Check if text line is part of a comment.
 # ----------------------------------------------------------------------------
-def LinesIsComment(line: number, column: number) : bool
+def LinesIsComment(line: number, column: number): bool
   return synIDattr(synIDtrans(synID(line, column, 1)), 'name') ==? 'comment'
 enddef
 
@@ -56,7 +47,7 @@ enddef
 # This function uses the 'comments' configuration of the current buffer to
 # compute the string to be used in the tail of a commented string.
 # ----------------------------------------------------------------------------
-def GetEndCommentStr() : string
+def GetEndCommentStr(): string
   const commentList = split(getbufvar('%', '&comments'), ',')
   for item in commentList
     if item =~ 'e[Oxlr]\?-\?\d\?:.*'
@@ -69,7 +60,7 @@ enddef
 # -
 #  Retrieve the number of bytes in buffer.
 ##
-def GetBufferLineCount() : number
+def GetBufferLineCount(): number
   const bufinfo = getbufinfo('%')
   return (empty(bufinfo) ? 1 : bufinfo[0].linecount)
 enddef
@@ -77,22 +68,26 @@ enddef
 # -
 #  Format the number of lines information at the end of the text.
 ##
-def FormatLinesInfo(setting: string) : string
+def FormatLinesInfo(setting: string): string
   const lineCount = GetBufferLineCount()
-  return printf(printf(setting, '%' .. lineCount .. 'd'), (v:foldend - v:foldstart))
+  const pattern   = printf(setting, '%'..strchars(lineCount)..'d')
+  return printf(pattern, (v:foldend - v:foldstart))
 enddef
 
 # -
 #  Calculates the maximum length, in characteres, that we have available in
 #  the current window.
 ##
-def MeasureAvailableSpace() : number
+def MeasureAvailableSpace(): number
   const signs = getwinvar(0, '&signcolumn')
-  const signsColumn = (signs == 'auto' || signs == 'yes') ? 2 : 0
+  const signColumns = (signs == 'auto' || signs == 'yes') ? 2 : 0
   const lineNumbers = (getwinvar(0, '&number') ? max([2, getwinvar(0, '&numberwidth')]) : 0)
   const foldColumns = getwinvar(0, '&foldcolumn')
+  const winWidth    = winwidth(0)
 
-  return winwidth(0) - (singsColumn + lineNumbers + foldColumns)
+  # We always take one character more to have a space between the number of
+  # lines folded and the edge of the window.
+  return winWidth - (signColumns + lineNumbers + foldColumns + 1)
 enddef
 
 # ----------------------------------------------------------------------------
@@ -106,11 +101,13 @@ enddef
 #         - sgml: a list with files we can consider of SGML kind.
 #         - suffix: format of the folded line suffix.
 ##
-export def FoldedText(options: dict<any>) : string
+export def FoldedText(options: dict<any>): string
   const ftype = getbufvar('%', '&filetype')
   if IsDisabled(ftype, options.disabled)
     return foldtext()
   endif
+
+  return getline(v:foldstart)
 
   # Get the line to be shown in the folded text. It will be changed several
   # times in this function.
@@ -132,8 +129,9 @@ export def FoldedText(options: dict<any>) : string
   const difference = availableSpace - lineWidth
 
   if difference < 0
-    textTail = '... ' .. textTail         # Add reticences at the end of our line
-    textLine = strcharpart(textLine, 0, textWidth + difference)
+    const ellipsis = '... '
+    textTail = ellipsis .. textTail         # Add ellipsis at the end of our line
+    textLine = strcharpart(textLine, 0, textWidth + difference - strdisplaywidth(ellipsis))
   elseif difference > 0
     textTail .= repeat(' ', difference)   # Fill with spaces
   endif

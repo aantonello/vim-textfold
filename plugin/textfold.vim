@@ -33,11 +33,11 @@ endif
 " The information is placed at the right side of the window. The '%s' format
 " specifier is where the number will be placed.
 " ----------------------------------------------------------------------------
-if len(get(g:, 'foldtext_plugin_lines_format', ''))
+if len(get(g:, 'foldtext_plugin_lines_format', '')) == 0
   let g:foldtext_plugin_lines_format = ' [%s lines]'
 endif
 
-function LineFoldInfo()
+function FoldLine()
   if (getwinvar(0, '&diff'))
     return foldtext()
   endif
@@ -45,12 +45,13 @@ function LineFoldInfo()
   " Build a dictionary with current options values. This method garantees that
   " the user can change its options at any time and the function will respect
   " that change.
-  let l:options = {
+  let options = {
         \ 'disabled': get(g:, 'textfold_plugin_disabled_filetypes', []),
-        \ 'sgml'    : get(g:, 'textfold_plugin_sgml_filetypes', []),
-        \ 'suffix'  : get(g:, 'foldtext_plugin_lines_format', get(b:, 'foldtext_plugin_lines_format', ''))
+        \ 'sgml':     get(g:, 'textfold_plugin_sgml_filetypes', []),
+        \ 'suffix':   get(g:, 'foldtext_plugin_lines_format', get(b:, 'foldtext_plugin_lines_format', ''))
         \ }
 
-  return textfold.FoldedText(l:options)
+  return textfold#FoldedText(options)
+  "return s:textfold.FoldedText(options)
 endfunction
 
