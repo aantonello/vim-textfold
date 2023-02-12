@@ -10,6 +10,8 @@ if get(g:, 'textfold_plugin_loaded', 0) || v:version < 900
 endif
 let g:textfold_plugin_loaded = v:true
 
+import '../include/textfold.vim'
+
 " ============================================================================
 " Configuration
 " ============================================================================
@@ -24,25 +26,31 @@ endif
 " List of filetypes which syntax is similar of XML (a SGML kind)
 " ----------------------------------------------------------------------------
 if empty(get(g:, 'textfold_plugin_sgml_filetypes', []))
-  let g:textfold_plugin_sgml_filetypes = ['html', 'xml', 'php', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact']
+  let g:textfold_plugin_sgml_filetypes = ['html', 'xml', 'php', 'javascriptreact', 'typescriptreact']
 endif
 
-" Suffix to be used in the number of lines folded.
-" E.g.: '[ 23 lines]'
+" How to format the 'lines folded' information.
+" The information is placed at the right side of the window. The '%s' format
+" specifier is where the number will be placed.
 " ----------------------------------------------------------------------------
-if len(get(g:, 'foldtext_plugin_lines_suffix', '')) == 0
-  let g:foldtext_plugin_lines_suffix = 'lines'
+if len(get(g:, 'foldtext_plugin_lines_format', ''))
+  let g:foldtext_plugin_lines_format = ' [%s lines]'
 endif
 
-" The number of lines is printed inside square brackets. To change that, add
-" the first and end characters in the array. If no enclosing characters are
-" needed, use empty strings.
-" ----------------------------------------------------------------------------
-if empty(get(g:, 'foldtext_plugin_lines_brackets', []))
-  let g:foldtext_plugin_lines_brackets = ['[', ']']
-endif
+function LineFoldInfo()
+  if (getwinvar(0, '&diff'))
+    return foldtext()
+  endif
 
-import autoload '../autoload/textfold.vim'
+  " Build a dictionary with current options values. This method garantees that
+  " the user can change its options at any time and the function will respect
+  " that change.
+  let l:options = {
+        \ 'disabled': get(g:, 'textfold_plugin_disabled_filetypes', []),
+        \ 'sgml'    : get(g:, 'textfold_plugin_sgml_filetypes', []),
+        \ 'suffix'  : get(g:, 'foldtext_plugin_lines_format', get(b:, 'foldtext_plugin_lines_format', ''))
+        \ }
 
-set foldtext=textfold#BuildFoldedText()
+  return textfold.FoldedText(l:options)
+endfunction
 

@@ -17,10 +17,10 @@ let g:airline_powerline_fonts = 1             " Enable powerline fonts in airlin
 let g:gui_treeview = 'explorer'               " For NERDTree automatic show up set to v:true
 let g:gui_columns  = 200                      " Startup width
 let g:gui_lines    = 99                       " Startup height
-let g:color_light  = 'white'                  " Sets color for day light.
+let g:color_light  = 'intellij'               " Sets color for day light.
 let g:color_night  = 'darkZ'                  " Sets color for night.
 
-let g:fc_DefaultFont='InconsolataNerdFontComplete-Regular:h14'
+let g:fc_DefaultFont='UbuntuMonoNerdFontComplete-Regular:h14'
 
 let g:atpl_UsersList = {
       \ '@PROJECT@': '',
