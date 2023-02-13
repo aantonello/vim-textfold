@@ -32,7 +32,6 @@ fun s:RemoveFoldMarkers(line)
   if empty(marker)
     return a:line
   else
-    echomsg 'RemoveFoldMarkers('..a:line..') = [' .. marker[0] ..', '..marker[1]..']'
     return substitute(a:line, marker[0] .. '.*', '', 'g')
   endif
 endfun
