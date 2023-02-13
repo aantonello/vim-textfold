@@ -48,7 +48,7 @@ function FoldLine()
   let options = {
         \ 'disabled': get(g:, 'textfold_plugin_disabled_filetypes', []),
         \ 'sgml':     get(g:, 'textfold_plugin_sgml_filetypes', []),
-        \ 'suffix':   get(g:, 'foldtext_plugin_lines_format', get(b:, 'foldtext_plugin_lines_format', ''))
+        \ 'suffix':   get(b:, 'foldtext_plugin_lines_format', get(g:, 'foldtext_plugin_lines_format', ''))
         \ }
 
   return textfold#FoldedText(options)
