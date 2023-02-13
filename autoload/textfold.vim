@@ -28,17 +28,18 @@ endfun
 " Remove fold markers if we have it in the current line.
 " ----------------------------------------------------------------------------
 fun s:RemoveFoldMarkers(line)
-  let marker = split(getwinvar(0, '&foldmarker'), ',')
+  const marker = split(getwinvar(0, '&foldmarker'), ',')
   if empty(marker)
     return a:line
   else
+    echomsg 'RemoveFoldMarkers('..a:line..') = [' .. marker[0] ..', '..marker[1]..']'
     return substitute(a:line, marker[0] .. '.*', '', 'g')
   endif
 endfun
 
 " Check if text line is part of a comment.
 " ----------------------------------------------------------------------------
-fun s:LinesInComment(line, column)
+fun s:LineIsComment(line, column)
   return synIDattr(synIDtrans(synID(a:line, a:column, 1)), 'name') ==? 'comment'
 endfun
 
@@ -47,12 +48,10 @@ endfun
 " compute the string to be used in the tail of a commented string.
 " ----------------------------------------------------------------------------
 fun s:GetEndCommentStr()
-  let commentList = split(getbufvar('%', '&comments'), ',')
-  for item in commentList
-    if item =~ 'e[Oxlr]\?-\?\d\?:.*'
-      return ' ' .. split(item, ':')[1]
-    endif
-  endfor
+  const stringList  = matchlist(getbufvar('%', '&commentstring'), '\(.*\)\?%s\(.*\)\?')
+  if len(stringList) > 2
+    return ' ' .. stringList[2]
+  endif
   return ''
 endfun
 
@@ -114,7 +113,7 @@ fun textfold#FoldedText(options)
   let lineIndent = indent(v:foldstart)
   let sgmlKind   = s:IsSgmlKind(ftype, a:options.sgml, textLine)
 
-  if LineIsComment(v:foldstart, (lineIndent + 1))
+  if s:LineIsComment(v:foldstart, (lineIndent + 1))
     let textLine = s:RemoveFoldMarkers(textLine)
     let textTail = s:GetEndCommentStr()
   endif

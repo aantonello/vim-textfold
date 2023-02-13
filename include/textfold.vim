@@ -39,7 +39,7 @@ enddef
 
 # Check if text line is part of a comment.
 # ----------------------------------------------------------------------------
-def LinesIsComment(line: number, column: number): bool
+def LineIsComment(line: number, column: number): bool
   return synIDattr(synIDtrans(synID(line, column, 1)), 'name') ==? 'comment'
 enddef
 
@@ -48,12 +48,10 @@ enddef
 # compute the string to be used in the tail of a commented string.
 # ----------------------------------------------------------------------------
 def GetEndCommentStr(): string
-  const commentList = split(getbufvar('%', '&comments'), ',')
-  for item in commentList
-    if item =~ 'e[Oxlr]\?-\?\d\?:.*'
-      return ' ' .. split(item, ':')[1]
-    endif
-  endfor
+  const stringList  = matchlist(getbufvar('%', '&commentstring'), '\(.*\)\?%s\(.*\)\?')
+  if len(stringList) > 2
+    return ' ' .. stringList[2]
+  endif
   return ''
 enddef
 
