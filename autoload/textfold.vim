@@ -1,7 +1,6 @@
 " Functions to build useful folded text lines.
 " Maintainer: Alessandro Antonello <antonello dot ale @ gmail dot com>
 " ============================================================================
-
 const version = '1.0.2'
 
 " ----------------------------------------------------------------------------
@@ -11,7 +10,7 @@ const version = '1.0.2'
 " Check if the current buffer has a disabled filetype.
 " ----------------------------------------------------------------------------
 fun s:IsDisabled(ftype, config)
-  if empty(a:config) || (index(a:ftype, a:config) < 0)
+  if empty(a:config) || (index(a:config, a:ftype) < 0)
     return v:false
   endif
   return v:true
@@ -22,7 +21,7 @@ endfun
 fun s:IsSgmlKind(ftype, config, line)
   " If the filetype is in the SGML configuration list and the folded line
   " starts with an angled bracket.
-  return ((index(a:ftype, a:config) >= 0) && a:line =~? '^\s*<\w\+.*') ? v:true : v:false
+  return ((index(a:config, a:ftype) >= 0) && a:line =~? '^\s*<\w\+.*') ? v:true : v:false
 endfun
 
 " Remove fold markers if we have it in the current line.
@@ -67,7 +66,7 @@ endfun
 " ----------------------------------------------------------------------------
 fun s:FomatLinesInfo(setting)
   const lineCount = s:GetBufferLineCount()
-  const pattern   = printf(a:setting, '%'..strchars(lineCount)..'d')
+  const pattern   = printf(a:setting, '%' .. strchars(printf('%d', lineCount)) .. 'd')
   return printf(pattern, (v:foldend - v:foldstart))
 endfun
 
