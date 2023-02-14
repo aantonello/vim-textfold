@@ -51,7 +51,7 @@ function FoldLine()
         \ 'suffix':   get(b:, 'foldtext_plugin_lines_format', get(g:, 'foldtext_plugin_lines_format', ''))
         \ }
 
-  return textfold#FoldedText(options)
-  "return s:textfold.FoldedText(options)
+  "return textfold#FoldedText(options)
+  return s:textfold.FoldedText(options)
 endfunction
 
