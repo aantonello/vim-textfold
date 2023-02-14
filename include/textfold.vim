@@ -37,6 +37,19 @@ def RemoveFoldMarkers(line: string): string
   endif
 enddef
 
+# This is a lazy operation.
+# When the folded block is a comment, my the first line have only the 'open
+# comment' mark which will cause the folded text appear like '/* */' which is
+# very odd. We try to solve that reading the text line just after the open
+# comment and write it in the folded text.
+# ----------------------------------------------------------------------------
+def GetCommentText(textLine: string): string
+  if strlen(trim(textLine)) <= 4
+    return trim(textLine, '', 2) .. ' ' .. getline(v:foldstart + 1)
+  endif
+  return textLine
+enddef
+
 # Check if text line is part of a comment.
 # ----------------------------------------------------------------------------
 def LineIsComment(line: number, column: number): bool
@@ -47,9 +60,9 @@ enddef
 # This function uses the 'comments' configuration of the current buffer to
 # compute the string to be used in the tail of a commented string.
 # ----------------------------------------------------------------------------
-def GetEndCommentStr(): string
+def GetEndCommentStr(textLine: string): string
   const stringList  = matchlist(getbufvar('%', '&commentstring'), '\(.*\)\?%s\(.*\)\?')
-  if len(stringList) > 2
+  if len(stringList) > 2 && (stridx(textLine, stringList[2]) < 0)
     return ' ' .. stringList[2]
   endif
   return ''
@@ -114,8 +127,10 @@ export def FoldedText(options: dict<any>): string
   const sgmlKind   = IsSgmlKind(ftype, options.sgml, textLine)
 
   if LineIsComment(v:foldstart, (lineIndent + 1))
-    textLine = RemoveFoldMarkers(textLine)
-    textTail = GetEndCommentStr()
+    textLine = GetCommentText(RemoveFoldMarkers(textLine))
+    textTail = GetEndCommentStr(textLine)
+  elseif sgmlKind && (stridx(textLine, '>') < 0)
+    textTail = ' />'
   endif
 
   const suffix = FormatLinesInfo(options.suffix)
@@ -125,7 +140,7 @@ export def FoldedText(options: dict<any>): string
   const difference = availableSpace - lineWidth
 
   if difference < 0
-    const ellipsis = '... '
+    const ellipsis = ' ...'
     textTail = ellipsis .. textTail         # Add ellipsis at the end of our line
     textLine = strcharpart(textLine, 0, textWidth + difference - strdisplaywidth(ellipsis))
   elseif difference > 0
