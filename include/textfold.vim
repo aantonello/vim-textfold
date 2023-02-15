@@ -70,10 +70,19 @@ enddef
 # compute the string to be used in the tail of a commented string.
 # ----------------------------------------------------------------------------
 def GetEndCommentStr(textLine: string): string
-  const stringList  = matchlist(getbufvar('%', '&commentstring'), '\(.*\)\?%s\(.*\)\?')
-  if len(stringList) > 2 && (stridx(textLine, stringList[2]) < 0)
-    return ' ' .. stringList[2]
+
+  var matches = matchlist(getbufvar('%', '&comments'), '\<e[Oblrx-]*[\d]\?:\([^,]\+\)')
+  if len(matches) > 1
+    if stridx(textLine, matches[1]) < 0
+      return ' ' .. matches[1]
+    endif
+  else
+    matches = matchlist(getbufvar('%', '&commentstring'), '\(.*\)\?%s\(.*\)\?')
+    if len(matches) > 2 && (stridx(textLine, matches[2]) < 0)
+      return ' ' .. matches[2]
+    endif
   endif
+
   return ''
 enddef
 
