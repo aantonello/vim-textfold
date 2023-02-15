@@ -6,6 +6,7 @@ vim9script
 const version = '1.0.2'
 
 import './json.vim'
+import './js.vim'
 
 # ----------------------------------------------------------------------------
 # Local functions
@@ -135,6 +136,8 @@ export def FoldedText(options: dict<any>): string
     textTail = ' />'
   elseif ftype ==? 'json'
     textTail = json.SelectLineEnding(textLine)
+  elseif js.IsJSKind(ftype)
+    textLine = js.CompleteCloseImport(textLine)
   endif
 
   const suffix = FormatLinesInfo(options.suffix)
@@ -154,4 +157,4 @@ export def FoldedText(options: dict<any>): string
   return textLine .. textTail .. suffix
 enddef
 
-:defcompile
+#:defcompile
