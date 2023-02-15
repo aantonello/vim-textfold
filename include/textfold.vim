@@ -48,7 +48,13 @@ enddef
 # ----------------------------------------------------------------------------
 def GetCommentText(textLine: string): string
   if strlen(trim(textLine)) <= 4
-    return trim(textLine, '', 2) .. ' ' .. getline(v:foldstart + 1)
+    var nextLine = trim(getline(v:foldstart + 1))   # Remove indentation
+    # Read the comments configuration to remove a possible start comment
+    const matches = matchlist(getbufvar('%', '&comments'), '\<m[Ob]\?:\([^,]\+\)')
+    if (len(matches) > 1)
+      nextLine = trim(nextLine, matches[1])
+    endif
+    return trim(textLine, '', 2) .. ' ' .. nextLine
   endif
   return textLine
 enddef
