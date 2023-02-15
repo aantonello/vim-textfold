@@ -21,7 +21,7 @@ export def CompleteCloseImport(textLine: string): string
       return textLine .. ' ... ' .. lastLine
     elseif stridx(textLine, '{') == (strlen(textLine) - 1)
       const included = getline(v:foldstart + 1)
-      return textLine .. trim(included) .. ' ... ' .. lastLine
+      return textLine .. ' ' .. trim(included) .. ' ... ' .. lastLine
     endif
     return textLine .. ' ... ' .. lastLine
   endif
