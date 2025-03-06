@@ -16,13 +16,17 @@ enddef
 # and structures.
 # ----------------------------------------------------------------------------
 export def CompleteCppFold(textLine: string): string
-  final lastIndex = strlen(textLine) - 1
-  final severalLines = (v:foldend - v:foldstart) > 1
+  final lastIndex: number = (strlen(textLine) - 1)
+  final severalLines: bool = ((v:foldend - v:foldstart) > 1)
 
-  if match(textLine, '{\s*$') > 0
-    return severalLines ? textLine .. ' ... }' : textLine .. ' }'
-  elseif match(textLine, '(\s*$') > 0
-    return severalLines ? textLine .. ' ... )' : textLine .. ')'
+  var tail: string = ''
+
+  if (strridx(textLine, '{') == lastIndex)
+    tail = severalLines ? ' ... }' : ' }'
+  elseif (strridx(textLine, '(') == lastIndex)
+    tail = severalLines ? ' ... )' : ')'
   endif
+
+  return textLine .. tail
 enddef
 

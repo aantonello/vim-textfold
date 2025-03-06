@@ -55,7 +55,7 @@ def GetCommentText(textLine: string): string
     if (len(matches) > 1)
       nextLine = trim(nextLine, matches[1])
     endif
-    return trim(textLine, ' ', 2) .. ' ' .. nextLine
+    return trim(textLine, '', 2) .. ' ' .. trim(nextLine)
   endif
   return textLine
 enddef
