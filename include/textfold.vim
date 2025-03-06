@@ -7,6 +7,7 @@ const version = '1.0.2'
 
 import './json.vim'
 import './js.vim'
+import './cpp.vim'
 
 # ----------------------------------------------------------------------------
 # Local functions
@@ -41,7 +42,7 @@ def RemoveFoldMarkers(line: string): string
 enddef
 
 # This is a lazy operation.
-# When the folded block is a comment, my the first line have only the 'open
+# When the folded block is a comment, the first line may have only the 'open
 # comment' mark which will cause the folded text appear like '/* */' which is
 # very odd. We try to solve that reading the text line just after the open
 # comment and write it in the folded text.
@@ -54,7 +55,7 @@ def GetCommentText(textLine: string): string
     if (len(matches) > 1)
       nextLine = trim(nextLine, matches[1])
     endif
-    return trim(textLine, '', 2) .. ' ' .. nextLine
+    return trim(textLine, ' ', 2) .. ' ' .. nextLine
   endif
   return textLine
 enddef
@@ -153,6 +154,8 @@ export def FoldedText(options: dict<any>): string
     textTail = json.SelectLineEnding(textLine)
   elseif js.IsJSKind(ftype)
     textLine = js.CompleteCloseImport(textLine)
+  elseif cpp.IsCppKind(ftype)
+    textLine = cpp.CompleteCppFold(textLine)
   endif
 
   const suffix = FormatLinesInfo(options.suffix)
